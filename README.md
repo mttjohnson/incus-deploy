@@ -13,6 +13,10 @@ Install the required ceph packages for ansible on the controller, on Debian that
 apt install --no-install-recommends ceph-base ceph-common
 ```
 
+### Incus Host Requirements
+5x VMs limited to 4vCPU + 4GiB RAM + 140GiB Storage each (16vCPU + 20GiB RAM + 700GiB Storage)
+9x System Containers limited to 1vCPU + 1GiB RAM each (9vCPU + 9GiB RAM)
+
 ### Create the test VMs with OpenTofu
 Go to terraform directory:
 ```

@@ -13,3 +13,7 @@ variable "image" {
 variable "storage_pool" {
   type = string
 }
+
+variable "network_bridge" {
+  type = string
+}

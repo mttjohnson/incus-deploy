@@ -1,0 +1,18 @@
+# Example of terraform.tfvars
+# 
+# You can copy this example file to terraform.tfvars and modify values for your
+# own setup to operate with values different from the defaults
+# 
+# A terraform.tfvars will override any other defined variables such as the ones 
+# in *.auto.tfvars or defaults in variables.tf
+
+# Provider variables
+incus_host_name    = "myincus"          # default: incus
+incus_host_scheme  = "https"            # default: https
+incus_host_address = "myincus.internal" # default: 127.0.0.1
+incus_host_port    = 443                # default: 443
+incus_host_default = true               # default: true
+
+# Incus Host variables
+incus_storage_pool = "local"            # default: default
+incus_network_bridge = "mybr0"          # default: incusbr0

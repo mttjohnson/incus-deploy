@@ -17,7 +17,7 @@ resource "incus_network" "this" {
   description = "Network used to test incus-deploy (OVN uplink)"
 
   config = {
-    "ipv4.address" = "172.31.254.1/24"
+    "ipv4.address" = "172.31.253.1/24"
     "ipv4.nat" = "true"
     "ipv6.address" = "fd00:1e4d:637d:1234::1/64"
     "ipv6.nat" = "true"
@@ -49,7 +49,7 @@ resource "incus_profile" "this" {
     name = "eth0"
 
     properties = {
-      "network" = "incusbr0"
+      "network" = var.network_bridge
       "name"    = "eth0"
     }
   }
@@ -71,12 +71,12 @@ resource "incus_profile" "this" {
     properties = {
       "pool"   = var.storage_pool
       "io.bus" = "nvme"
-      "source" = incus_volume.disk4.name
+      "source" = incus_storage_volume.disk4.name
     }
   }
 }
 
-resource "incus_volume" "disk1" {
+resource "incus_storage_volume" "disk1" {
   for_each = var.instance_names
 
   project      = incus_project.this.name
@@ -89,7 +89,7 @@ resource "incus_volume" "disk1" {
   }
 }
 
-resource "incus_volume" "disk2" {
+resource "incus_storage_volume" "disk2" {
   for_each = var.instance_names
 
   project      = incus_project.this.name
@@ -102,7 +102,7 @@ resource "incus_volume" "disk2" {
   }
 }
 
-resource "incus_volume" "disk3" {
+resource "incus_storage_volume" "disk3" {
   for_each = var.instance_names
 
   project      = incus_project.this.name
@@ -115,7 +115,7 @@ resource "incus_volume" "disk3" {
   }
 }
 
-resource "incus_volume" "disk4" {
+resource "incus_storage_volume" "disk4" {
   project      = incus_project.this.name
   name         = "shared-disk"
   description  = "Shared block storage"
@@ -142,7 +142,7 @@ resource "incus_instance" "instances" {
     properties = {
       "pool"   = var.storage_pool
       "io.bus" = "nvme"
-      "source" = incus_volume.disk1[each.key].name
+      "source" = incus_storage_volume.disk1[each.key].name
     }
   }
 
@@ -153,7 +153,7 @@ resource "incus_instance" "instances" {
     properties = {
       "pool"   = var.storage_pool
       "io.bus" = "nvme"
-      "source" = incus_volume.disk2[each.key].name
+      "source" = incus_storage_volume.disk2[each.key].name
     }
   }
 
@@ -164,7 +164,7 @@ resource "incus_instance" "instances" {
     properties = {
       "pool"   = var.storage_pool
       "io.bus" = "nvme"
-      "source" = incus_volume.disk3[each.key].name
+      "source" = incus_storage_volume.disk3[each.key].name
     }
   }
 

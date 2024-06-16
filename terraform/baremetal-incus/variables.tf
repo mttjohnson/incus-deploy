@@ -17,3 +17,8 @@ variable "memory" {
 variable "storage_pool" {
   type = string
 }
+
+variable "network_bridge" {
+  type = string
+}
+
