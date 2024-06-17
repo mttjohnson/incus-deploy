@@ -18,7 +18,22 @@ variable "storage_pool" {
   type = string
 }
 
-variable "network_bridge" {
+variable "nic_method" {
   type = string
+  default = "network"
 }
 
+variable "nictype" {
+  type = string
+  default = ""
+}
+
+variable "nictype_parent" {
+  type = string
+  default = ""
+}
+
+variable "network_name" {
+  type = string
+  default = ""
+}

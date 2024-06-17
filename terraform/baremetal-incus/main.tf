@@ -48,9 +48,12 @@ resource "incus_profile" "this" {
     type = "nic"
     name = "eth0"
 
-    properties = {
-      "network" = var.network_bridge
+    properties = var.nic_method == "network" ? {
+      "network" = var.network_name
       "name"    = "eth0"
+    } : {
+      "nictype" = var.nictype
+      "parent"  = var.nictype_parent
     }
   }
 

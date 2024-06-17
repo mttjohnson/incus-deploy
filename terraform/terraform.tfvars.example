@@ -15,4 +15,7 @@ incus_host_default = true               # default: true
 
 # Incus Host variables
 incus_storage_pool = "local"            # default: default
-incus_network_bridge = "mybr0"          # default: incusbr0
+incus_nic_method = "network"            # default: network (can be: network / nictype)
+incus_network_name = "managedbr0"       # default: incusbr0 (only used with incus_nic_method = network)
+incus_nictype = "bridged"               # default: bridged (only used with incus_nic_method = nictype)
+incus_nictype_parent = "unmanagedbr0"   # default: incusbr0 (only used with incus_nic_method = nictype)
