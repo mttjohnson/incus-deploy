@@ -10,7 +10,11 @@ Install [OpenTofu](https://opentofu.org/docs/intro/install/).
 
 Install the required ceph packages for ansible on the controller, on Debian that's the `ceph-base` and `ceph-common` packages:
 ```
+# Ubuntu
 apt install --no-install-recommends ceph-base ceph-common
+
+# macOS
+? not sure how to get client tools (ceph-authtool, monmaptool) on macOS yet ?
 ```
 
 ### Incus Host Requirements
@@ -28,6 +32,8 @@ Init the terraform project:
 tofu init
 ```
 
+NOTE: If you are connecting to a remote incus host or have different storage pool and network names you may need to copy the `terraform.tfvars.example` file to `terraform.tfvars` and modify values to match your targeted incus host configuration.
+
 Create the VMs for testing:
 ```
 tofu apply
@@ -43,6 +49,7 @@ Copy the example inventory file:
 ```
 cp hosts.yaml.example hosts.yaml
 ```
+NOTE: If you are connecting to a remote incus host you will need to change the `ansible_incus_remote` variable to match the name of the Incus remote (see: `incus remote list` for a list of remote names to use).
 
 Run the Playbooks:
 ```
