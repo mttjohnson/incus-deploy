@@ -1,0 +1,103 @@
+---
+
+# Original example simulation (except shell changed to debug to see commands)
+- name: Ceph - Generate cluster keys and maps
+  hosts: all
+  # order: shuffle
+  order: inventory
+  gather_facts: yes
+  vars:
+    task_fsid: "{{ ceph_fsid | default('') }}"
+    task_bootstrap_osd_keyring: ../data/ceph/cluster.{{ task_fsid }}.bootstrap-osd.keyring
+    task_client_admin_keyring: ../data/ceph/cluster.{{ task_fsid }}.client.admin.keyring
+    task_mon_keyring: ../data/ceph/cluster.{{ task_fsid }}.mon.keyring
+    task_mon_map: ../data/ceph/cluster.{{ task_fsid }}.mon.map
+    task_release: "{{ ceph_release | default('reef') }}"
+    task_roles: "{{ ceph_roles | default([]) }}"
+
+    task_release_majors:
+      luminous: 12
+      mimic: 13
+      nautilus: 14
+      octopus: 15
+      pacific: 16
+      quincy: 17
+      reef: 18
+  tasks:
+
+    - name: Generate mon map
+      delegate_to: 127.0.0.1
+      ansible.builtin.debug:
+        msg: monmaptool --create{% if task_release_majors[task_release] | default(None) %} --set-min-mon-release={{ task_release_majors[task_release] }}{% endif %} --fsid {{ task_fsid }} {{ task_mon_map }}
+        # creates: '{{ task_mon_map }}'
+      throttle: 1
+      notify: Add nodes to mon map
+      changed_when: true 
+      # run_once: true # this would only run once because the first run would normally create the file
+      when: 
+        - 'task_fsid'
+        - inventory_hostname == play_hosts[0] # this would only run once because the first run would normally create the file
+        # - ansible_hostname == 'server01' # this would only run once because the first run would normally create the file
+
+  handlers:
+
+    - name: Add nodes to mon map
+      delegate_to: 127.0.0.1
+      ansible.builtin.debug:
+        msg: monmaptool --add {{ item.name }} {{ item.ip }} {{ task_mon_map }}
+      loop: "{{ lookup('template', '../files/ceph/ceph.monitors.tpl') | from_yaml | default([]) }}"
+
+
+
+# Modified Playbook (fixes-to-run-for-me)
+# Expecting to produce the same series of commends as above but on the remote machine
+- name: Ceph - Generate cluster keys and maps (single remote host execution)
+  hosts: server01
+  # order: shuffle
+  gather_facts: yes
+  vars:
+    task_fsid: "{{ ceph_fsid | default('') }}"
+    task_bootstrap_osd_keyring: ../data/ceph/cluster.{{ task_fsid }}.bootstrap-osd.keyring
+    task_client_admin_keyring: ../data/ceph/cluster.{{ task_fsid }}.client.admin.keyring
+    task_mon_keyring: ../data/ceph/cluster.{{ task_fsid }}.mon.keyring
+    task_mon_map: ../data/ceph/cluster.{{ task_fsid }}.mon.map
+    task_release: "{{ ceph_release | default('reef') }}"
+    task_roles: "{{ ceph_roles | default([]) }}"
+
+    task_release_majors:
+      luminous: 12
+      mimic: 13
+      nautilus: 14
+      octopus: 15
+      pacific: 16
+      quincy: 17
+      reef: 18
+  tasks:
+
+    # modify template to use groups['all'] instead of vars['ansible_play_hosts']
+    - name: Add nodes to mon map (simple)
+      # delegate_to: 127.0.0.1
+      ansible.builtin.debug:
+        msg: monmaptool --add {{ item.name }} {{ item.ip }} {{ task_mon_map }}
+      loop: "{{ lookup('template', '../files/ceph/ceph.monitors.tpl') | from_yaml | default([]) }}"
+
+    # rather than use template loop through variables directly
+    - name: Add nodes to mon map
+      # delegate_to: 127.0.0.1
+      ansible.builtin.debug:
+        msg: monmaptool --add {{ item.inventory_hostname }} {{ item['ceph_ip_address'] | default(item['ansible_default_ipv6']['address'] | default(item['ansible_default_ipv4']['address'])) }} {{ task_mon_map }}
+      # loop: "{{ lookup('template', '../files/ceph/ceph.monitors.tpl') | from_yaml | default([]) }}"
+      loop: "{{ groups['all'] | 
+                map('extract', hostvars) | 
+                selectattr('ceph_fsid', 'equalto', task_fsid) | 
+                selectattr('ceph_roles', 'contains', 'mon') | 
+                list 
+                }}"
+      loop_control:
+        label: "{{ item.inventory_hostname }}"
+
+                # groups['all'] |                                   get list of all hostnames in group all
+                # map('extract', hostvars) |                        map the hostname to exxtract the hostvars (dict) and return for each host in the list
+                # selectattr('ceph_fsid', 'equalto', task_fsid) |   filter the list of dict on the ceph_fsid field to make sure it equals value from task_fsid
+                # selectattr('ceph_roles', 'contains', 'mon') |     filter the list of dict on the ceph_roles field to make sure it contains the values mon
+                # list                                              convert the object into a list for use by the loop
