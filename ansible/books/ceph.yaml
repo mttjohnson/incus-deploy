@@ -244,42 +244,42 @@
       when: not task_mon_map_stat.stat.exists
 
   handlers:
-    - name: Add key to client.admin keyring
+    - name: Add key to client.admin keyring (remote)
       # delegate_to: 127.0.0.1
       ansible.builtin.shell:
         cmd: ceph-authtool /root/generate/task_mon_keyring --import-keyring /root/generate/task_client_admin_keyring
-      register: add_key_to_client_admin_keyring
-    - name: Add key to client.admin keyring
+      listen: Add key to client.admin keyring
+    - name: Add key to client.admin keyring (fetch)
       ansible.builtin.fetch:
         src: /root/generate/task_mon_keyring
         dest: '{{ task_mon_keyring }}'
         flat: true
-      when: add_key_to_client_admin_keyring.changed
+      listen: Add key to client.admin keyring
 
-    - name: Add key to bootstrap-osd keyring
+    - name: Add key to bootstrap-osd keyring (remote)
       # delegate_to: 127.0.0.1
       ansible.builtin.shell:
         cmd: ceph-authtool /root/generate/task_mon_keyring --import-keyring /root/generate/task_bootstrap_osd_keyring
-      register: add_key_to_bootstrap_osd_keyring
-    - name: Add key to bootstrap-osd keyring
+      listen: Add key to bootstrap-osd keyring
+    - name: Add key to bootstrap-osd keyring (fetch)
       ansible.builtin.fetch:
         src: /root/generate/task_mon_keyring
         dest: '{{ task_mon_keyring }}'
         flat: true
-      when: add_key_to_bootstrap_osd_keyring.changed
+      listen: Add key to bootstrap-osd keyring
 
-    - name: Add nodes to mon map
+    - name: Add nodes to mon map (remote)
       # delegate_to: 127.0.0.1
       ansible.builtin.shell:
         cmd: monmaptool --add {{ item.name }} {{ item.ip }} /root/generate/task_mon_map
       loop: "{{ lookup('template', '../files/ceph/ceph.monitors.tpl') | from_yaml | default([]) }}"
-      register: add_nodes_to_mon_map
-    - name: Add nodes to mon map
+      listen: Add nodes to mon map
+    - name: Add nodes to mon map (fetch)
       ansible.builtin.fetch:
         src: /root/generate/task_mon_map
         dest: '{{ task_mon_map }}'
         flat: true
-      when: add_nodes_to_mon_map.changed
+      listen: Add nodes to mon map
 
 
 
