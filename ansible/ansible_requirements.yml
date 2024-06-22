@@ -4,5 +4,6 @@
 
 collections:
   - name: community.crypto # 2.20.0
+  - name: community.general # 9.1.0
 
 roles:
