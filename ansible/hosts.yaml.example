@@ -8,6 +8,10 @@ all:
     ovn_name: "baremetal"
     incus_release: "stable"
     ovn_release: "ppa"
+    lvmcluster_name: baremetal
+    lvmcluster_vgs: {} # Dict of VG name to storage device path
+      # vg_name_1: storage_device_path_1
+      # vg_name_2: storage_device_path_2
   children:
     baremetal:
       vars:
