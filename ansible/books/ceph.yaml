@@ -7,6 +7,7 @@
   vars:
     task_release: "{{ ceph_release | default('reef') }}"
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Create apt keyring path
       file:
@@ -48,6 +49,7 @@
   order: shuffle
   vars:
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Install ceph-common
       apt:
@@ -135,6 +137,7 @@
       pacific: 16
       quincy: 17
       reef: 18
+  any_errors_fatal: true
   tasks:
     - name: create /root/generate dir
       ansible.builtin.file:
@@ -304,6 +307,7 @@
     task_rbd_cache: "{{ ceph_rbd_cache | default('128Mi') }}"
     task_rbd_cache_max: "{{ ceph_rbd_cache_max | default('96Mi') }}"
     task_rbd_cache_target: "{{ ceph_rbd_cache_target | default('64Mi') }}"
+  any_errors_fatal: true
   tasks:
     - name: Transfer the cluster configuration
       template:
@@ -400,6 +404,7 @@
   vars:
     task_fsid: "{{ ceph_fsid | default('') }}"
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Bootstrap Ceph mon
       shell:
@@ -434,6 +439,7 @@
     task_disks: "{{ ceph_disks | default([]) }}"
     task_fsid: "{{ ceph_fsid | default('') }}"
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Bootstrap Ceph OSD
       shell:
@@ -456,6 +462,7 @@
   vars:
     task_fsid: "{{ ceph_fsid | default('') }}"
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Create /var/lib/ceph/mgr/ceph-{{ inventory_hostname_short }}
       file:
@@ -497,6 +504,7 @@
   vars:
     task_fsid: "{{ ceph_fsid | default('') }}"
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Create /var/lib/ceph/mds/ceph-{{ inventory_hostname_short }}
       file:
@@ -538,6 +546,7 @@
   vars:
     task_fsid: "{{ ceph_fsid | default('') }}"
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Create /var/lib/ceph/radosgw/ceph-rgw.{{ inventory_hostname_short }}
       file:
@@ -579,6 +588,7 @@
   vars:
     task_fsid: "{{ ceph_fsid | default('') }}"
     task_roles: "{{ ceph_roles | default([]) }}"
+  any_errors_fatal: true
   tasks:
     - name: Enable ceph rbd-mirror
       systemd:
