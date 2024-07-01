@@ -17,9 +17,10 @@ apt install --no-install-recommends ceph-base ceph-common
 ? not sure how to get client tools (ceph-authtool, monmaptool) on macOS yet ?
 ```
 
-### Incus Host Requirements
+### Incus Host Potential Usage
 5x VMs limited to 4vCPU + 4GiB RAM + 140GiB Storage each (16vCPU + 20GiB RAM + 700GiB Storage)
 9x System Containers limited to 1vCPU + 1GiB RAM each (9vCPU + 9GiB RAM)
+...when running this, it didn't use that much total resources on the host...
 
 ### Create the test VMs with OpenTofu
 Go to terraform directory:
